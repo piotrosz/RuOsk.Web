@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta id="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="product" content="Russian Keyboard">
+    <meta id="author" content="Piotr Ludwiczuk">
+    <meta id="description" content="Russian Virtual Keyboard">
+    <meta id="keywords" content="russian, letters, characters, keyboard, virtual, on-screen">
+
+    <title>Russian virtual keyboard</title>
+    <link href="Content/metro-ui/css/metro-bootstrap.css" rel="stylesheet" />
+    <link href="Content/metro-ui/css/metro-bootstrap-responsive.css" rel="stylesheet" />
+
+    <!--<link href="js/prettify/prettify.css" rel="stylesheet" />-->
+    
+    <script src="Scripts/jquery-1.10.2.js"></script>
+    <script src="Scripts/metro-ui/jquery.ui.widget.js"></script>
+    <script src="Scripts/jquery.mousewheel.js"></script>
+    <script src="Scripts/jquery.easing.1.3.js"></script>
+    <!--<script src="js/prettify.js"></script>-->
+
+    <style type="text/css">
+        .metro .grid .row {
+            margin-top: 5px;
+        }
+
+        element.style {
+        }
+
+        .metro input[type="button"] {
+            font-size: 18px;
+            line-height: 26px;
+        }
+    </style>
+
+    <script type="text/javascript" src="app.js"></script>
+
+</head>
+<body class="metro">
+    <div class="container" style="text-align: center">
+        <div class="grid fluid show-grid">
+            <div class="row">
+                <input class="button info" type="button" id="btn_jo" value="ё" />
+                <input type="button" class="button info" id="btn_1" value="1" />
+                <input type="button" class="button info" id="btn_2" value="2" />
+                <input type="button" class="button info" id="btn_3" value="3" />
+                <input type="button" class="button info" id="btn_4" value="4" />
+                <input type="button" class="button info" id="btn_5" value="5" />
+                <input type="button" class="button info" id="btn_6" value="6" />
+                <input type="button" class="button info" id="btn_7" value="7" />
+                <input type="button" class="button info" id="btn_8" value="8" />
+                <input type="button" class="button info" id="btn_9" value="9" />
+                <input type="button" class="button info" id="btn_0" value="0" />
+                <input type="button" class="button info" id="btn_minus" value="-" />
+                <input type="button" class="button info" id="btn_equal" value="=" />
+            </div>
+            <div class="row">
+                <input type="button" class="button info" id="btn_shorti" value="й" />
+                <input type="button" class="button info" id="btn_tse" value="ц" />
+                <input type="button" class="button info" id="btn_u" value="у" />
+                <input type="button" class="button info" id="btn_ka" value="к" />
+                <input type="button" class="button info" id="btn_ie" value="е" />
+                <input type="button" class="button info" id="btn_en" value="н" />
+                <input type="button" class="button info" id="btn_ghe" value="г" />
+                <input type="button" class="button info" id="btn_sha" value="ш" />
+                <input type="button" class="button info" id="btn_shcha" value="щ" />
+                <input type="button" class="button info" id="btn_ze" value="з" />
+                <input type="button" class="button info" id="btn_ha" value="х" />
+                <input type="button" class="button info" id="btn_hard_sign" value="ъ" />
+            </div>
+            <div class="row">
+                    <input type="button" class="button info" id="btn_caps_lock" value="Caps Lock" />
+                    <input type="button" class="button info" id="btn_ef" value="ф" />
+                    <input type="button" class="button info" id="btn_y" value="ы" />
+                    <input type="button" class="button info" id="btn_ve" value="в" />
+                    <input type="button" class="button info" id="btn_a" value="а" />
+                    <input type="button" class="button info" id="btn_pe" value="п" />
+                    <input type="button" class="button info" id="btn_er" value="р" />
+                    <input type="button" class="button info" id="btn_o" value="о" />
+                    <input type="button" class="button info" id="btn_el" value="л" />
+                    <input type="button" class="button info" id="btn_de" value="д" />
+                    <input type="button" class="button info" id="btn_zhe" value="ж" />
+                    <input type="button" class="button info" id="btn_e" value="э" />
+                </div>
+            <div class="row">
+                <input type="button" class="button info" id="btn_ya" value="я" />
+                <input type="button" class="button info" id="btn_che" value="ч" />
+                <input type="button" class="button info" id="btn_es" value="с" />
+                <input type="button" class="button info" id="btn_em" value="м" />
+                <input type="button" class="button info" id="btn_i" value="и" />
+                <input type="button" class="button info" id="btn_te" value="т" />
+                <input type="button" class="button info" id="btn_soft_sign" value="ь" />
+                <input type="button" class="button info" id="btn_be" value="б" />
+                <input type="button" class="button info" id="btn_yu" value="ю" />
+                <input type="button" class="button info" id="btn_dot" value="." />
+            </div>
+            <div class="row">
+                <input type="button" class="button info" id="btn_shift_left" value="Shift" style="width: 60px;" />
+                <input type="button" class="button info" id="btn_space" value="" style="width:220px;" />
+                <input type="button" class="button info" id="btn_shift_right" value="Shift" style="width: 60px;" />
+            </div>
+            <div class="row">
+                <input type="button" class="button success" id="btn_sja" value="ся" style="width: 60px;" />
+                <input type="button" class="button success" id="btn_t_soft" value="ть" style="width: 60px;" />
+                <input type="button" class="button success" id="btn_l_soft" value="ль" style="width: 60px;" />
+                <input type="button" class="button success" id="btn_yj" value="ый" style="width: 60px;" />
+                <input type="button" class="button success" id="btn_iye" value="ие" style="width: 60px;" />
+                
+
+            </div>
+
+        </div>
+        <div>
+            <div class="input-control textarea" data-role="input-control">
+                <textarea style="width: 100%; height: 300px; font-size: 24px;" id="output"></textarea>
+            </div>
+
+            <input type="button" class="button warning small" value="Clear text area" id="eraser" style="display:none;" />
+
+
+        </div>
+
+        <footer>
+            <div class="container tertiary-text">
+                <span style="float:right">
+                    <small>
+                    2013,
+                    <a href="http://www.if.pw.edu.pl/~ludwik">Piotr Ludwiczuk</a>
+                    piotrosz@gmail.com
+                    </small>
+                </span>
+            </div>
+        </footer>
+
+    </div>
+
+    
+       
+</body>
+</html>
