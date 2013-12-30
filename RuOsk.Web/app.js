@@ -158,6 +158,7 @@ var Keyboard = (function () {
         this.bindLetter("btn_sja", "ся", "СЯ");
         this.bindLetter("btn_t_soft", "ть", "ТЬ");
         this.bindLetter("btn_l_soft", "ль", "ЛЬ");
+        this.bindLetter("btn_n_soft", "нь", "НЬ");
         this.bindLetter("btn_yj", "ый", "ЫЙ");
         this.bindLetter("btn_iye", "ие", "ИЕ");
 
@@ -194,7 +195,6 @@ var Output = (function () {
     }
     Output.prototype.append = function (char) {
         $("#" + this.id).insertAtCursor(char);
-        //$("#" + this.id).val($("#" + this.id).val() + char);
     };
 
     Output.prototype.clear = function () {
