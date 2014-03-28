@@ -37,6 +37,10 @@ class Button {
         $('#' + this.id).click(f);
     }
 
+    val(value: string): void {
+        $('#' + this.id).val(value);
+    }
+
     toLower() {
         if (this.character != undefined) {
             $('#' + this.id).val(this.character.lower);
@@ -144,6 +148,7 @@ class Keyboard {
     bindLetter(id: string, lower: string, upper: string) {
         this[id] = new Button(id, new Character(lower, upper));
         this[id].click(() => { this.pressButton(this[id]); });
+        this[id].val(lower);
     }
 
     initialize() {

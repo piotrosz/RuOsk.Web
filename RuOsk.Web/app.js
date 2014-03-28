@@ -35,6 +35,10 @@ var Button = (function () {
         $('#' + this.id).click(f);
     };
 
+    Button.prototype.val = function (value) {
+        $('#' + this.id).val(value);
+    };
+
     Button.prototype.toLower = function () {
         if (this.character != undefined) {
             $('#' + this.id).val(this.character.lower);
@@ -78,6 +82,7 @@ var Keyboard = (function () {
         this[id].click(function () {
             _this.pressButton(_this[id]);
         });
+        this[id].val(lower);
     };
 
     Keyboard.prototype.initialize = function () {
