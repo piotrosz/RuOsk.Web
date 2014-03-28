@@ -64,6 +64,8 @@ class Keyboard {
     private capsLockPressed = false;
     private shiftPressed = false;
 
+    private row1letters = "";
+
     // row #1
     private btn_jo: Button;
     private btn_1: Button;
@@ -145,13 +147,16 @@ class Keyboard {
         }
     }
 
-    bindLetter(id: string, lower: string, upper: string) {
-        this[id] = new Button(id, new Character(lower, upper));
+    bindLetter(id: string, lower: string, upper?: string) {
+
+        var upperCase = upper == undefined ? lower.toUpperCase() : upper;
+
+        this[id] = new Button(id, new Character(lower, upperCase));
         this[id].click(() => { this.pressButton(this[id]); });
         this[id].val(lower);
     }
 
-    initialize() {
+    init() {
 
         // row #1
         this.bindLetter("btn_jo", "ё", "Ё");
@@ -169,44 +174,44 @@ class Keyboard {
         this.bindLetter("btn_equal", "=", "+");
         
         // row #2
-        this.bindLetter("btn_shorti", "й", "Й");
-        this.bindLetter("btn_tse", "ц", "Ц");
-        this.bindLetter("btn_u", "у", "У");
-        this.bindLetter("btn_ka", "к", "К");
-        this.bindLetter("btn_ie", "е", "Е");
-        this.bindLetter("btn_en", "н", "Н");
-        this.bindLetter("btn_ghe", "г", "Г");
-        this.bindLetter("btn_sha", "ш", "Ш");
-        this.bindLetter("btn_shcha", "щ", "Щ");
-        this.bindLetter("btn_ze", "з", "З");
-        this.bindLetter("btn_ha", "х", "Х");
-        this.bindLetter("btn_hard_sign", "ъ", "Ъ");
+        this.bindLetter("btn_shorti", "й");
+        this.bindLetter("btn_tse", "ц");
+        this.bindLetter("btn_u", "у");
+        this.bindLetter("btn_ka", "к");
+        this.bindLetter("btn_ie", "е");
+        this.bindLetter("btn_en", "н");
+        this.bindLetter("btn_ghe", "г");
+        this.bindLetter("btn_sha", "ш");
+        this.bindLetter("btn_shcha", "щ");
+        this.bindLetter("btn_ze", "з");
+        this.bindLetter("btn_ha", "х");
+        this.bindLetter("btn_hard_sign", "ъ");
      
         // row #3
         this.btn_capsLock = new Button("btn_caps_lock");
         this.btn_capsLock.click(() => { this.capsLockPressed = !this.capsLockPressed; this.changeKeyboardCase(); })
-        this.bindLetter("btn_ef", "ф", "Ф");
-        this.bindLetter("btn_y", "ы", "Ы");
-        this.bindLetter("btn_ve", "в", "В");
-        this.bindLetter("btn_a", "а", "А");
-        this.bindLetter("btn_pe", "п", "П");
-        this.bindLetter("btn_er", "р", "Р");
-        this.bindLetter("btn_o", "о", "О");
-        this.bindLetter("btn_el", "л", "Л");
-        this.bindLetter("btn_de", "д", "Д");
-        this.bindLetter("btn_zhe", "ж", "Ж");
-        this.bindLetter("btn_e", "э", "Э");
+        this.bindLetter("btn_ef", "ф");
+        this.bindLetter("btn_y", "ы");
+        this.bindLetter("btn_ve", "в");
+        this.bindLetter("btn_a", "а");
+        this.bindLetter("btn_pe", "п");
+        this.bindLetter("btn_er", "р");
+        this.bindLetter("btn_o", "о");
+        this.bindLetter("btn_el", "л");
+        this.bindLetter("btn_de", "д");
+        this.bindLetter("btn_zhe", "ж");
+        this.bindLetter("btn_e", "э");
 
         // row #4
-        this.bindLetter("btn_ya", "я", "Я");
-        this.bindLetter("btn_che", "ч", "Ч");
-        this.bindLetter("btn_es", "с", "С");
-        this.bindLetter("btn_em", "м", "М");
-        this.bindLetter("btn_i", "и", "И");
-        this.bindLetter("btn_te", "т", "Т");
-        this.bindLetter("btn_soft_sign", "ь", "Ь");
-        this.bindLetter("btn_be", "б", "Б");
-        this.bindLetter("btn_yu", "ю", "Ю");
+        this.bindLetter("btn_ya", "я");
+        this.bindLetter("btn_che", "ч");
+        this.bindLetter("btn_es", "с");
+        this.bindLetter("btn_em", "м");
+        this.bindLetter("btn_i", "и");
+        this.bindLetter("btn_te", "т");
+        this.bindLetter("btn_soft_sign", "ь");
+        this.bindLetter("btn_be", "б");
+        this.bindLetter("btn_yu", "ю");
         this.bindLetter("btn_dot", ".", ",");
         
         // row #5
@@ -217,12 +222,12 @@ class Keyboard {
         this.bindLetter("btn_space", " ", " ");
 
         // row #6
-        this.bindLetter("btn_sja", "ся", "СЯ");
-        this.bindLetter("btn_t_soft", "ть", "ТЬ");
-        this.bindLetter("btn_l_soft", "ль", "ЛЬ")
-        this.bindLetter("btn_n_soft", "нь", "НЬ");
-        this.bindLetter("btn_yj", "ый", "ЫЙ");
-        this.bindLetter("btn_iye", "ие", "ИЕ");
+        this.bindLetter("btn_sja", "ся");
+        this.bindLetter("btn_t_soft", "ть");
+        this.bindLetter("btn_l_soft", "ль")
+        this.bindLetter("btn_n_soft", "нь");
+        this.bindLetter("btn_yj", "ый");
+        this.bindLetter("btn_iye", "ие");
 
         $("#eraser").click(() => { this.output.clear();})
     }
@@ -251,28 +256,99 @@ class Keyboard {
 
 class Output {
 
+    textbox: JQuery;
+
     constructor(public id: string) {
+        this.textbox = $("#" + this.id);
     }
 
     append(char: string) {
-
-        $("#" + this.id).insertAtCursor(char);
+        this.textbox.insertAtCursor(char);
     }
 
     clear() {
-        $("#" + this.id).val("");
+        this.textbox.val("");
     }
 
     isEmpty() {
-        return $("#" + this.id).val() == "";
+        this.textbox.val() == "";
+    }
+}
+
+class Translit {
+    private alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+    private translit = "a,b,v,g,d,e,jo,zh,z,i,j,k,l,m,n,o,p,r,s,t,u,f,h,c,ch,sh,shh,#,y,',je,ju,ja";
+
+    private alphabetArray: string[];
+    private translitArray: string[];
+
+    private prevLetter = "";
+    private prevPrevLetter = "";
+
+    private createLegend() {
+        $.each(this.alphabet.split(""), (index, value) => {
+            $("#legend1").append("<span class='label success' style='width: 28px;'>" + this.translitArray[index] + "</span>")
+            $("#legend2").append("<span class='label info' style='width: 28px;'>" + this.alphabetArray[index] + "</span>");
+        });
+    }
+
+    private tryCode(letter: string, element: JQuery, prev?: string[]) {
+        var index = -1;
+
+        if (prev == undefined) {
+            index = this.translitArray.indexOf(letter);
+        }
+        else {
+            index = this.translitArray.indexOf(prev.join("") + letter);
+        }
+
+        if (index != -1) {
+            var russian = this.alphabetArray[index];
+
+            if (prev != undefined) {
+                // Delete last character
+                element.val((index, val) => { return val.substr(0, val.length - 1); });
+            }
+
+            element.insertAtCursor(russian);
+
+            return true;
+        }
+        return false;
+    }
+
+    init() {
+        this.alphabetArray = this.alphabet.split("").concat(this.alphabet.toUpperCase().split(""));
+        this.translitArray = this.translit.split(",").concat(this.translit.toUpperCase().split(","));
+
+        this.createLegend();
+
+        var _self = this;
+
+        $("#output")
+            .keypress(function (event) {
+
+                var letter = String.fromCharCode(event.charCode);
+
+                if (_self.tryCode(letter, $(this), [_self.prevPrevLetter, _self.prevLetter]) ||
+                    _self.tryCode(letter, $(this), [_self.prevLetter]) ||
+                    _self.tryCode(letter, $(this)) // Make use of short circut evaluation
+                    ) {
+                    event.preventDefault();
+                    _self.prevPrevLetter = _self.prevLetter;
+                    _self.prevLetter = letter;
+                }
+            });
     }
 }
 
 $(() => {
     var output = new Output("output");
     var keyboard = new Keyboard(output);
+    keyboard.init();
 
-    keyboard.initialize();
+    var translit = new Translit();
+    translit.init();
 });
 
 
