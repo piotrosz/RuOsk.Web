@@ -287,8 +287,8 @@ class Translit {
 
     private createLegend() {
         $.each(this.alphabet.split(""), (index, value) => {
-            $("#legend1").append("<span class='label success' style='width: 28px;'>" + this.translitArray[index] + "</span>")
-            $("#legend2").append("<span class='label info' style='width: 28px;'>" + this.alphabetArray[index] + "</span>");
+            $("#legend1").append("<span class='label default' style='width: 28px;'>" + this.translitArray[index] + "</span>")
+            $("#legend2").append("<span class='label default' style='width: 28px;'><strong>" + this.alphabetArray[index] + "</strong></span>");
         });
     }
 

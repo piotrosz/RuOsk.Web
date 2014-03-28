@@ -226,8 +226,8 @@ var Translit = (function () {
     Translit.prototype.createLegend = function () {
         var _this = this;
         $.each(this.alphabet.split(""), function (index, value) {
-            $("#legend1").append("<span class='label success' style='width: 28px;'>" + _this.translitArray[index] + "</span>");
-            $("#legend2").append("<span class='label info' style='width: 28px;'>" + _this.alphabetArray[index] + "</span>");
+            $("#legend1").append("<span class='label default' style='width: 28px;'>" + _this.translitArray[index] + "</span>");
+            $("#legend2").append("<span class='label default' style='width: 28px;'><strong>" + _this.alphabetArray[index] + "</strong></span>");
         });
     };
 
