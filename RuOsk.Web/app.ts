@@ -159,7 +159,7 @@ class Keyboard {
     init() {
 
         // row #1
-        this.bindLetter("btn_jo", "ё", "Ё");
+        this.bindLetter("btn_jo", "ё");
         this.bindLetter("btn_1", "1", "!");
         this.bindLetter("btn_2", "2", '"');
         this.bindLetter("btn_3", "3", "№");
@@ -256,11 +256,7 @@ class Keyboard {
 
 class Output {
 
-    textbox: JQuery;
-
-    constructor(public id: string) {
-        this.textbox = $("#" + this.id);
-    }
+    constructor(public textbox: JQuery) {}
 
     append(char: string) {
         this.textbox.insertAtCursor(char);
@@ -276,8 +272,11 @@ class Output {
 }
 
 class Translit {
+
+    constructor(public textbox: JQuery) { }
+
     private alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-    private translit = "a,b,v,g,d,e,jo,zh,z,i,j,k,l,m,n,o,p,r,s,t,u,f,h,c,ch,sh,shh,#,y,',je,ju,ja";
+    private translit = "a,b,v,g,d,e,jo,zh,z,i,j,k,l,m,n,o,p,r,s,t,u,f,h,c,ch,sh,shh,#,y,@,je,ju,ja";
 
     private alphabetArray: string[];
     private translitArray: string[];
@@ -287,8 +286,13 @@ class Translit {
 
     private createLegend() {
         $.each(this.alphabet.split(""), (index, value) => {
-            $("#legend1").append("<span class='label default' style='width: 28px;'>" + this.translitArray[index] + "</span>")
-            $("#legend2").append("<span class='label default' style='width: 28px;'><strong>" + this.alphabetArray[index] + "</strong></span>");
+
+            var hint = encodeURI(this.translitArray[index]) + " &raquo; " + this.alphabetArray[index];
+
+            var labelStyle = index % 2 == 0 ? "default" : "success";
+
+            $("#legend1").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "' data-hint-position='top'>" + this.translitArray[index] + "</span>")
+            $("#legend2").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "'><strong>" + this.alphabetArray[index] + "</strong></span>");
         });
     }
 
@@ -322,12 +326,10 @@ class Translit {
         this.translitArray = this.translit.split(",").concat(this.translit.toUpperCase().split(","));
 
         this.createLegend();
-
         var _self = this;
 
-        $("#output")
+        this.textbox
             .keypress(function (event) {
-
                 var letter = String.fromCharCode(event.charCode);
 
                 if (_self.tryCode(letter, $(this), [_self.prevPrevLetter, _self.prevLetter]) ||
@@ -343,11 +345,13 @@ class Translit {
 }
 
 $(() => {
-    var output = new Output("output");
+    var textbox = $("#output");
+
+    var output = new Output(textbox);
     var keyboard = new Keyboard(output);
     keyboard.init();
 
-    var translit = new Translit();
+    var translit = new Translit(textbox);
     translit.init();
 });
 

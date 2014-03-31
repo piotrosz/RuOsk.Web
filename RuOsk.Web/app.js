@@ -91,7 +91,7 @@ var Keyboard = (function () {
     Keyboard.prototype.init = function () {
         var _this = this;
         // row #1
-        this.bindLetter("btn_jo", "ё", "Ё");
+        this.bindLetter("btn_jo", "ё");
         this.bindLetter("btn_1", "1", "!");
         this.bindLetter("btn_2", "2", '"');
         this.bindLetter("btn_3", "3", "№");
@@ -198,9 +198,8 @@ var Keyboard = (function () {
 })();
 
 var Output = (function () {
-    function Output(id) {
-        this.id = id;
-        this.textbox = $("#" + this.id);
+    function Output(textbox) {
+        this.textbox = textbox;
     }
     Output.prototype.append = function (char) {
         this.textbox.insertAtCursor(char);
@@ -217,17 +216,22 @@ var Output = (function () {
 })();
 
 var Translit = (function () {
-    function Translit() {
+    function Translit(textbox) {
+        this.textbox = textbox;
         this.alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-        this.translit = "a,b,v,g,d,e,jo,zh,z,i,j,k,l,m,n,o,p,r,s,t,u,f,h,c,ch,sh,shh,#,y,',je,ju,ja";
+        this.translit = "a,b,v,g,d,e,jo,zh,z,i,j,k,l,m,n,o,p,r,s,t,u,f,h,c,ch,sh,shh,#,y,@,je,ju,ja";
         this.prevLetter = "";
         this.prevPrevLetter = "";
     }
     Translit.prototype.createLegend = function () {
         var _this = this;
         $.each(this.alphabet.split(""), function (index, value) {
-            $("#legend1").append("<span class='label default' style='width: 28px;'>" + _this.translitArray[index] + "</span>");
-            $("#legend2").append("<span class='label default' style='width: 28px;'><strong>" + _this.alphabetArray[index] + "</strong></span>");
+            var hint = encodeURI(_this.translitArray[index]) + " &raquo; " + _this.alphabetArray[index];
+
+            var labelStyle = index % 2 == 0 ? "default" : "success";
+
+            $("#legend1").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "' data-hint-position='top'>" + _this.translitArray[index] + "</span>");
+            $("#legend2").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "'><strong>" + _this.alphabetArray[index] + "</strong></span>");
         });
     };
 
@@ -262,10 +266,9 @@ var Translit = (function () {
         this.translitArray = this.translit.split(",").concat(this.translit.toUpperCase().split(","));
 
         this.createLegend();
-
         var _self = this;
 
-        $("#output").keypress(function (event) {
+        this.textbox.keypress(function (event) {
             var letter = String.fromCharCode(event.charCode);
 
             if (_self.tryCode(letter, $(this), [_self.prevPrevLetter, _self.prevLetter]) || _self.tryCode(letter, $(this), [_self.prevLetter]) || _self.tryCode(letter, $(this))) {
@@ -279,11 +282,13 @@ var Translit = (function () {
 })();
 
 $(function () {
-    var output = new Output("output");
+    var textbox = $("#output");
+
+    var output = new Output(textbox);
     var keyboard = new Keyboard(output);
     keyboard.init();
 
-    var translit = new Translit();
+    var translit = new Translit(textbox);
     translit.init();
 });
 //# sourceMappingURL=app.js.map

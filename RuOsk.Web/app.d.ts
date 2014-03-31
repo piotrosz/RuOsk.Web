@@ -1,3 +1,3 @@
 interface JQuery {
-    insertAtCursor(char:string) : void;
+    insertAtCursor(char: string): void;
 } 
