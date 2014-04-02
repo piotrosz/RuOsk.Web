@@ -30,27 +30,48 @@ jQuery.fn.extend({
 });
 
 class Button {
+
+    private element: JQuery;
+
     constructor(public id: string, public character?: Character) {
+        this.element = $('#' + id);
     }
 
     click(f: Function): void {
-        $('#' + this.id).click(f);
+        this.element.click(f);
     }
 
     val(value: string): void {
-        $('#' + this.id).val(value);
+        this.element.val(value);
     }
 
     toLower() {
         if (this.character != undefined) {
-            $('#' + this.id).val(this.character.lower);
+            this.element.val(this.character.lower);
         }
     }
 
     toUpper() {
         if (this.character != undefined) {
-            $('#' + this.id).val(this.character.upper);
+            this.element.val(this.character.upper);
         }
+    }
+}
+
+class Output {
+
+    constructor(public textbox: JQuery) { }
+
+    append(char: string) {
+        this.textbox.insertAtCursor(char);
+    }
+
+    clear() {
+        this.textbox.val("");
+    }
+
+    isEmpty() {
+        this.textbox.val() == "";
     }
 }
 
@@ -251,23 +272,6 @@ class Keyboard {
                 }
             }
         }
-    }
-}
-
-class Output {
-
-    constructor(public textbox: JQuery) {}
-
-    append(char: string) {
-        this.textbox.insertAtCursor(char);
-    }
-
-    clear() {
-        this.textbox.val("");
-    }
-
-    isEmpty() {
-        this.textbox.val() == "";
     }
 }
 

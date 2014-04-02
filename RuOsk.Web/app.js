@@ -30,27 +30,46 @@ var Button = (function () {
     function Button(id, character) {
         this.id = id;
         this.character = character;
+        this.element = $('#' + id);
     }
     Button.prototype.click = function (f) {
-        $('#' + this.id).click(f);
+        this.element.click(f);
     };
 
     Button.prototype.val = function (value) {
-        $('#' + this.id).val(value);
+        this.element.val(value);
     };
 
     Button.prototype.toLower = function () {
         if (this.character != undefined) {
-            $('#' + this.id).val(this.character.lower);
+            this.element.val(this.character.lower);
         }
     };
 
     Button.prototype.toUpper = function () {
         if (this.character != undefined) {
-            $('#' + this.id).val(this.character.upper);
+            this.element.val(this.character.upper);
         }
     };
     return Button;
+})();
+
+var Output = (function () {
+    function Output(textbox) {
+        this.textbox = textbox;
+    }
+    Output.prototype.append = function (char) {
+        this.textbox.insertAtCursor(char);
+    };
+
+    Output.prototype.clear = function () {
+        this.textbox.val("");
+    };
+
+    Output.prototype.isEmpty = function () {
+        this.textbox.val() == "";
+    };
+    return Output;
 })();
 
 var Character = (function () {
@@ -195,24 +214,6 @@ var Keyboard = (function () {
         }
     };
     return Keyboard;
-})();
-
-var Output = (function () {
-    function Output(textbox) {
-        this.textbox = textbox;
-    }
-    Output.prototype.append = function (char) {
-        this.textbox.insertAtCursor(char);
-    };
-
-    Output.prototype.clear = function () {
-        this.textbox.val("");
-    };
-
-    Output.prototype.isEmpty = function () {
-        this.textbox.val() == "";
-    };
-    return Output;
 })();
 
 var Translit = (function () {
