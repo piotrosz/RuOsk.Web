@@ -27,11 +27,16 @@ jQuery.fn.extend({
 });
 
 var Button = (function () {
-    function Button(id, character) {
-        this.id = id;
+    function Button(rowIndex, character) {
         this.character = character;
-        this.element = $('#' + id);
+        var row = $('.row').get(rowIndex);
+        this.element = $("<input />", { class: "button info", type: "button" });
+        $(row).append(this.element).append("&nbsp;");
     }
+    Button.prototype.setStyle = function (style) {
+        this.element.attr("style", style);
+    };
+
     Button.prototype.click = function (f) {
         this.element.click(f);
     };
@@ -85,7 +90,7 @@ var Keyboard = (function () {
         this.output = output;
         this.capsLockPressed = false;
         this.shiftPressed = false;
-        this.row1letters = "";
+        this.buttons = [];
     }
     Keyboard.prototype.pressButton = function (button) {
         this.output.append(this.isShiftOrCapsLockPressed() ? button.character.upper : button.character.lower);
@@ -96,102 +101,108 @@ var Keyboard = (function () {
         }
     };
 
-    Keyboard.prototype.bindLetter = function (id, lower, upper) {
+    Keyboard.prototype.bindLetter = function (rowIndex, lower, upper, style) {
         var _this = this;
         var upperCase = upper == undefined ? lower.toUpperCase() : upper;
-
-        this[id] = new Button(id, new Character(lower, upperCase));
-        this[id].click(function () {
-            _this.pressButton(_this[id]);
+        var button = new Button(rowIndex, new Character(lower, upperCase));
+        button.click(function () {
+            _this.pressButton(button);
         });
-        this[id].val(lower);
+        button.val(lower);
+
+        if (style != undefined && style != null) {
+            button.setStyle(style);
+        }
+
+        this.buttons.push(button);
     };
 
     Keyboard.prototype.init = function () {
         var _this = this;
-        // row #1
-        this.bindLetter("btn_jo", "ё");
-        this.bindLetter("btn_1", "1", "!");
-        this.bindLetter("btn_2", "2", '"');
-        this.bindLetter("btn_3", "3", "№");
-        this.bindLetter("btn_4", "4", ";");
-        this.bindLetter("btn_5", "5", "%");
-        this.bindLetter("btn_6", "6", ":");
-        this.bindLetter("btn_7", "7", "?");
-        this.bindLetter("btn_8", "8", "*");
-        this.bindLetter("btn_9", "9", "(");
-        this.bindLetter("btn_0", "0", ")");
-        this.bindLetter("btn_minus", "-", "_");
-        this.bindLetter("btn_equal", "=", "+");
+        this.bindLetter(0, "ё");
+        this.bindLetter(0, "1", "!");
+        this.bindLetter(0, "2", '"');
+        this.bindLetter(0, "3", "№");
+        this.bindLetter(0, "4", ";");
+        this.bindLetter(0, "5", "%");
+        this.bindLetter(0, "6", ":");
+        this.bindLetter(0, "7", "?");
+        this.bindLetter(0, "8", "*");
+        this.bindLetter(0, "9", "(");
+        this.bindLetter(0, "0", ")");
+        this.bindLetter(0, "-", "_");
+        this.bindLetter(0, "=", "+");
 
-        // row #2
-        this.bindLetter("btn_shorti", "й");
-        this.bindLetter("btn_tse", "ц");
-        this.bindLetter("btn_u", "у");
-        this.bindLetter("btn_ka", "к");
-        this.bindLetter("btn_ie", "е");
-        this.bindLetter("btn_en", "н");
-        this.bindLetter("btn_ghe", "г");
-        this.bindLetter("btn_sha", "ш");
-        this.bindLetter("btn_shcha", "щ");
-        this.bindLetter("btn_ze", "з");
-        this.bindLetter("btn_ha", "х");
-        this.bindLetter("btn_hard_sign", "ъ");
+        this.bindLetter(1, "й");
+        this.bindLetter(1, "ц");
+        this.bindLetter(1, "у");
+        this.bindLetter(1, "к");
+        this.bindLetter(1, "е");
+        this.bindLetter(1, "н");
+        this.bindLetter(1, "г");
+        this.bindLetter(1, "ш");
+        this.bindLetter(1, "щ");
+        this.bindLetter(1, "з");
+        this.bindLetter(1, "х");
+        this.bindLetter(1, "ъ");
 
-        // row #3
-        this.btn_capsLock = new Button("btn_caps_lock");
-        this.btn_capsLock.click(function () {
+        var button = new Button(2);
+        button.val("Caps Lock");
+        button.click(function () {
             _this.capsLockPressed = !_this.capsLockPressed;
             _this.changeKeyboardCase();
         });
-        this.bindLetter("btn_ef", "ф");
-        this.bindLetter("btn_y", "ы");
-        this.bindLetter("btn_ve", "в");
-        this.bindLetter("btn_a", "а");
-        this.bindLetter("btn_pe", "п");
-        this.bindLetter("btn_er", "р");
-        this.bindLetter("btn_o", "о");
-        this.bindLetter("btn_el", "л");
-        this.bindLetter("btn_de", "д");
-        this.bindLetter("btn_zhe", "ж");
-        this.bindLetter("btn_e", "э");
+        this.buttons.push(button);
 
-        // row #4
-        this.bindLetter("btn_ya", "я");
-        this.bindLetter("btn_che", "ч");
-        this.bindLetter("btn_es", "с");
-        this.bindLetter("btn_em", "м");
-        this.bindLetter("btn_i", "и");
-        this.bindLetter("btn_te", "т");
-        this.bindLetter("btn_soft_sign", "ь");
-        this.bindLetter("btn_be", "б");
-        this.bindLetter("btn_yu", "ю");
-        this.bindLetter("btn_dot", ".", ",");
+        this.bindLetter(2, "ф");
+        this.bindLetter(2, "ы");
+        this.bindLetter(2, "в");
+        this.bindLetter(2, "а");
+        this.bindLetter(2, "п");
+        this.bindLetter(2, "р");
+        this.bindLetter(2, "о");
+        this.bindLetter(2, "л");
+        this.bindLetter(2, "д");
+        this.bindLetter(2, "ж");
+        this.bindLetter(2, "э");
 
-        // row #5
-        this.btn_shift_left = new Button("btn_shift_left");
-        this.btn_shift_left.click(function () {
+        this.bindLetter(3, "я");
+        this.bindLetter(3, "ч");
+        this.bindLetter(3, "с");
+        this.bindLetter(3, "м");
+        this.bindLetter(3, "и");
+        this.bindLetter(3, "т");
+        this.bindLetter(3, "ь");
+        this.bindLetter(3, "б");
+        this.bindLetter(3, "ю");
+        this.bindLetter(3, ".", ",");
+
+        button = new Button(4);
+        button.click(function () {
             _this.shiftPressed = !_this.shiftPressed;
             _this.changeKeyboardCase();
         });
-        this.btn_shift_right = new Button("btn_shift_right");
-        this.btn_shift_right.click(function () {
+        button.setStyle("width: 60px;");
+        button.val("Shift");
+        this.buttons.push(button);
+
+        this.bindLetter(4, " ", " ", "width: 220px;");
+
+        button = new Button(4);
+        button.click(function () {
             _this.shiftPressed = !_this.shiftPressed;
             _this.changeKeyboardCase();
         });
-        this.bindLetter("btn_space", " ", " ");
+        button.setStyle("width:60px;");
+        button.val("Shift");
+        this.buttons.push(button);
 
-        // row #6
-        this.bindLetter("btn_sja", "ся");
-        this.bindLetter("btn_t_soft", "ть");
-        this.bindLetter("btn_l_soft", "ль");
-        this.bindLetter("btn_n_soft", "нь");
-        this.bindLetter("btn_yj", "ый");
-        this.bindLetter("btn_iye", "ие");
-
-        $("#eraser").click(function () {
-            _this.output.clear();
-        });
+        this.bindLetter(5, "ся", null, "width: 60px;");
+        this.bindLetter(5, "ть", null, "width: 60px;");
+        this.bindLetter(5, "ль", null, "width: 60px;");
+        this.bindLetter(5, "нь", null, "width: 60px;");
+        this.bindLetter(5, "ый", null, "width: 60px;");
+        this.bindLetter(5, "ие", null, "width: 60px;");
     };
 
     Keyboard.prototype.isShiftOrCapsLockPressed = function () {
@@ -199,19 +210,10 @@ var Keyboard = (function () {
     };
 
     Keyboard.prototype.changeKeyboardCase = function () {
-        if (this.isShiftOrCapsLockPressed()) {
-            for (var name in this) {
-                if (name.indexOf("btn_") == 0) {
-                    this[name].toUpper();
-                }
-            }
-        } else {
-            for (var name in this) {
-                if (name.indexOf("btn_") == 0) {
-                    this[name].toLower();
-                }
-            }
-        }
+        var _this = this;
+        $.each(this.buttons, function (index, value) {
+            _this.isShiftOrCapsLockPressed() ? value.toUpper() : value.toLower();
+        });
     };
     return Keyboard;
 })();
@@ -223,6 +225,7 @@ var Translit = (function () {
         this.translit = "a,b,v,g,d,e,jo,zh,z,i,j,k,l,m,n,o,p,r,s,t,u,f,h,c,ch,sh,shh,#,y,@,je,ju,ja";
         this.prevLetter = "";
         this.prevPrevLetter = "";
+        this.ctrlPressed = false;
     }
     Translit.prototype.createLegend = function () {
         var _this = this;
@@ -236,7 +239,7 @@ var Translit = (function () {
         });
     };
 
-    Translit.prototype.tryCode = function (letter, element, prev) {
+    Translit.prototype.tryCode = function (letter, prev) {
         var index = -1;
 
         if (prev == undefined) {
@@ -250,12 +253,12 @@ var Translit = (function () {
 
             if (prev != undefined) {
                 // Delete last character
-                element.val(function (index, val) {
+                this.textbox.val(function (index, val) {
                     return val.substr(0, val.length - 1);
                 });
             }
 
-            element.insertAtCursor(russian);
+            this.textbox.insertAtCursor(russian);
 
             return true;
         }
@@ -263,21 +266,25 @@ var Translit = (function () {
     };
 
     Translit.prototype.init = function () {
+        var _this = this;
         this.alphabetArray = this.alphabet.split("").concat(this.alphabet.toUpperCase().split(""));
         this.translitArray = this.translit.split(",").concat(this.translit.toUpperCase().split(","));
 
         this.createLegend();
-        var _self = this;
 
         this.textbox.keypress(function (event) {
-            var letter = String.fromCharCode(event.charCode);
-
-            if (_self.tryCode(letter, $(this), [_self.prevPrevLetter, _self.prevLetter]) || _self.tryCode(letter, $(this), [_self.prevLetter]) || _self.tryCode(letter, $(this))) {
-                event.preventDefault();
-                _self.prevPrevLetter = _self.prevLetter;
-                _self.prevLetter = letter;
-            }
+            return _this.keyPress(event);
         });
+    };
+
+    Translit.prototype.keyPress = function (event) {
+        var letter = String.fromCharCode(event.charCode);
+
+        if (this.tryCode(letter, [this.prevPrevLetter, this.prevLetter]) || this.tryCode(letter, [this.prevLetter]) || this.tryCode(letter)) {
+            event.preventDefault();
+            this.prevPrevLetter = this.prevLetter;
+            this.prevLetter = letter;
+        }
     };
     return Translit;
 })();
