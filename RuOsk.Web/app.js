@@ -27,11 +27,17 @@ jQuery.fn.extend({
 });
 
 var Button = (function () {
-    function Button(rowIndex, character) {
-        this.character = character;
+    function Button(rowIndex, cyrillic, latin, cssClass) {
+        if (typeof cssClass === "undefined") { cssClass = "button info"; }
+        this.cyrillic = cyrillic;
+        this.latin = latin;
         var row = $('.row').get(rowIndex);
-        this.element = $("<input />", { class: "button info", type: "button" });
+        this.element = $("<input />", { class: cssClass, type: "button" });
         $(row).append(this.element).append("&nbsp;");
+
+        if (cyrillic != undefined) {
+            this.currentCharacter = cyrillic;
+        }
     }
     Button.prototype.setStyle = function (style) {
         this.element.attr("style", style);
@@ -45,15 +51,27 @@ var Button = (function () {
         this.element.val(value);
     };
 
+    Button.prototype.getVal = function () {
+        return this.element.val();
+    };
+
     Button.prototype.toLower = function () {
-        if (this.character != undefined) {
-            this.element.val(this.character.lower);
+        if (this.currentCharacter != undefined) {
+            this.element.val(this.currentCharacter.lower);
         }
     };
 
     Button.prototype.toUpper = function () {
-        if (this.character != undefined) {
-            this.element.val(this.character.upper);
+        if (this.currentCharacter != undefined) {
+            this.element.val(this.currentCharacter.upper);
+        }
+    };
+
+    Button.prototype.toggleLatinCyrillic = function () {
+        if (this.currentCharacter === this.cyrillic) {
+            this.currentCharacter = this.latin;
+        } else {
+            this.currentCharacter = this.cyrillic;
         }
     };
     return Button;
@@ -93,7 +111,7 @@ var Keyboard = (function () {
         this.buttons = [];
     }
     Keyboard.prototype.pressButton = function (button) {
-        this.output.append(this.isShiftOrCapsLockPressed() ? button.character.upper : button.character.lower);
+        this.output.append(this.isShiftOrCapsLockPressed() ? button.currentCharacter.upper : button.currentCharacter.lower);
 
         if (this.shiftPressed) {
             this.shiftPressed = false;
@@ -101,14 +119,20 @@ var Keyboard = (function () {
         }
     };
 
-    Keyboard.prototype.bindLetter = function (rowIndex, lower, upper, style) {
+    Keyboard.prototype.addKey = function (rowIndex, cyrillicLower, cyrillicUpper, latinLower, latinUpper, style) {
         var _this = this;
-        var upperCase = upper == undefined ? lower.toUpperCase() : upper;
-        var button = new Button(rowIndex, new Character(lower, upperCase));
+        var cyrillicUpperChar = cyrillicUpper == undefined ? cyrillicLower.toUpperCase() : cyrillicUpper;
+        var button = new Button(rowIndex, new Character(cyrillicLower, cyrillicUpperChar));
+
+        if (latinLower != undefined) {
+            var latinUpperChar = latinUpper == undefined ? latinLower.toUpperCase() : latinUpper;
+            button.latin = new Character(latinLower, latinUpperChar);
+        }
+
         button.click(function () {
             _this.pressButton(button);
         });
-        button.val(lower);
+        button.val(cyrillicLower);
 
         if (style != undefined && style != null) {
             button.setStyle(style);
@@ -117,35 +141,75 @@ var Keyboard = (function () {
         this.buttons.push(button);
     };
 
+    Keyboard.prototype.addKeyLetter = function (rowIndex, cyrillicLower, latinLower, style) {
+        this.addKey(rowIndex, cyrillicLower, cyrillicLower.toUpperCase(), latinLower, latinLower.toUpperCase(), style);
+    };
+
     Keyboard.prototype.init = function () {
+        this.addLatinCyrillicButton();
+        this.addFirstRowButtons();
+        this.addSecondRowButtons();
+        this.addThirdRowButtons();
+        this.addFourthRowButtons();
+        this.addFifthRowButtons();
+    };
+
+    Keyboard.prototype.addLatinCyrillicButton = function () {
         var _this = this;
-        this.bindLetter(0, "ё");
-        this.bindLetter(0, "1", "!");
-        this.bindLetter(0, "2", '"');
-        this.bindLetter(0, "3", "№");
-        this.bindLetter(0, "4", ";");
-        this.bindLetter(0, "5", "%");
-        this.bindLetter(0, "6", ":");
-        this.bindLetter(0, "7", "?");
-        this.bindLetter(0, "8", "*");
-        this.bindLetter(0, "9", "(");
-        this.bindLetter(0, "0", ")");
-        this.bindLetter(0, "-", "_");
-        this.bindLetter(0, "=", "+");
+        var button = new Button(0, undefined, undefined, "button success");
+        button.val("To latin");
+        button.click(function () {
+            button.val(button.getVal() === "To latin" ? "To cyrillic" : "To latin");
 
-        this.bindLetter(1, "й");
-        this.bindLetter(1, "ц");
-        this.bindLetter(1, "у");
-        this.bindLetter(1, "к");
-        this.bindLetter(1, "е");
-        this.bindLetter(1, "н");
-        this.bindLetter(1, "г");
-        this.bindLetter(1, "ш");
-        this.bindLetter(1, "щ");
-        this.bindLetter(1, "з");
-        this.bindLetter(1, "х");
-        this.bindLetter(1, "ъ");
+            $.each(_this.buttons, function (index, btn) {
+                btn.toggleLatinCyrillic();
 
+                if (btn.currentCharacter == undefined) {
+                    return;
+                }
+
+                if (_this.isShiftOrCapsLockPressed()) {
+                    btn.val(btn.currentCharacter.upper);
+                } else {
+                    btn.val(btn.currentCharacter.lower);
+                }
+            });
+        });
+    };
+
+    Keyboard.prototype.addFirstRowButtons = function () {
+        this.addKey(0, "ё", "Ё", "`", "~");
+        this.addKey(0, "1", "!", "1", "!");
+        this.addKey(0, "2", '"', "2", "@");
+        this.addKey(0, "3", "№", "3", "#");
+        this.addKey(0, "4", ";", "4", "$");
+        this.addKey(0, "5", "%", "5", "%");
+        this.addKey(0, "6", ":", "6", "^");
+        this.addKey(0, "7", "?", "7", "&");
+        this.addKey(0, "8", "*", "8", "*");
+        this.addKey(0, "9", "(", "9", "(");
+        this.addKey(0, "0", ")", "0", ")");
+        this.addKey(0, "-", "_", "-", "_");
+        this.addKey(0, "=", "+", "=", "+");
+    };
+
+    Keyboard.prototype.addSecondRowButtons = function () {
+        this.addKeyLetter(1, "й", "q");
+        this.addKeyLetter(1, "ц", "w");
+        this.addKeyLetter(1, "у", "e");
+        this.addKeyLetter(1, "к", "r");
+        this.addKeyLetter(1, "е", "t");
+        this.addKeyLetter(1, "н", "y");
+        this.addKeyLetter(1, "г", "u");
+        this.addKeyLetter(1, "ш", "i");
+        this.addKeyLetter(1, "щ", "o");
+        this.addKeyLetter(1, "з", "p");
+        this.addKey(1, "х", "Х", "[", "{");
+        this.addKey(1, "ъ", "Ъ", "]", "}");
+    };
+
+    Keyboard.prototype.addThirdRowButtons = function () {
+        var _this = this;
         var button = new Button(2);
         button.val("Caps Lock");
         button.click(function () {
@@ -154,30 +218,35 @@ var Keyboard = (function () {
         });
         this.buttons.push(button);
 
-        this.bindLetter(2, "ф");
-        this.bindLetter(2, "ы");
-        this.bindLetter(2, "в");
-        this.bindLetter(2, "а");
-        this.bindLetter(2, "п");
-        this.bindLetter(2, "р");
-        this.bindLetter(2, "о");
-        this.bindLetter(2, "л");
-        this.bindLetter(2, "д");
-        this.bindLetter(2, "ж");
-        this.bindLetter(2, "э");
+        this.addKeyLetter(2, "ф", "a");
+        this.addKeyLetter(2, "ы", "s");
+        this.addKeyLetter(2, "в", "d");
+        this.addKeyLetter(2, "а", "f");
+        this.addKeyLetter(2, "п", "g");
+        this.addKeyLetter(2, "р", "h");
+        this.addKeyLetter(2, "о", "j");
+        this.addKeyLetter(2, "л", "k");
+        this.addKeyLetter(2, "д", "l");
+        this.addKey(2, "ж", "Ж", ";", ":");
+        this.addKey(2, "э", "Э", "'", "\"");
+    };
 
-        this.bindLetter(3, "я");
-        this.bindLetter(3, "ч");
-        this.bindLetter(3, "с");
-        this.bindLetter(3, "м");
-        this.bindLetter(3, "и");
-        this.bindLetter(3, "т");
-        this.bindLetter(3, "ь");
-        this.bindLetter(3, "б");
-        this.bindLetter(3, "ю");
-        this.bindLetter(3, ".", ",");
+    Keyboard.prototype.addFourthRowButtons = function () {
+        this.addKeyLetter(3, "я", "z");
+        this.addKeyLetter(3, "ч", "x");
+        this.addKeyLetter(3, "с", "c");
+        this.addKeyLetter(3, "м", "v");
+        this.addKeyLetter(3, "и", "b");
+        this.addKeyLetter(3, "т", "n");
+        this.addKeyLetter(3, "ь", "m");
+        this.addKey(3, "б", "Б", ",", "<");
+        this.addKey(3, "ю", "Ю", ".", ">");
+        this.addKey(3, ".", ",", "/", "?");
+    };
 
-        button = new Button(4);
+    Keyboard.prototype.addFifthRowButtons = function () {
+        var _this = this;
+        var button = new Button(4);
         button.click(function () {
             _this.shiftPressed = !_this.shiftPressed;
             _this.changeKeyboardCase();
@@ -186,7 +255,7 @@ var Keyboard = (function () {
         button.val("Shift");
         this.buttons.push(button);
 
-        this.bindLetter(4, " ", " ", "width: 220px;");
+        this.addKeyLetter(4, " ", " ", "width: 220px;");
 
         button = new Button(4);
         button.click(function () {
@@ -196,13 +265,6 @@ var Keyboard = (function () {
         button.setStyle("width:60px;");
         button.val("Shift");
         this.buttons.push(button);
-
-        this.bindLetter(5, "ся", null, "width: 60px;");
-        this.bindLetter(5, "ть", null, "width: 60px;");
-        this.bindLetter(5, "ль", null, "width: 60px;");
-        this.bindLetter(5, "нь", null, "width: 60px;");
-        this.bindLetter(5, "ый", null, "width: 60px;");
-        this.bindLetter(5, "ие", null, "width: 60px;");
     };
 
     Keyboard.prototype.isShiftOrCapsLockPressed = function () {
@@ -211,8 +273,8 @@ var Keyboard = (function () {
 
     Keyboard.prototype.changeKeyboardCase = function () {
         var _this = this;
-        $.each(this.buttons, function (index, value) {
-            _this.isShiftOrCapsLockPressed() ? value.toUpper() : value.toLower();
+        $.each(this.buttons, function (index, button) {
+            _this.isShiftOrCapsLockPressed() ? button.toUpper() : button.toLower();
         });
     };
     return Keyboard;

@@ -1,9 +1,11 @@
+using System;
 using System.Web.Optimization;
 
-[assembly: WebActivatorEx.PostApplicationStartMethod(typeof(Keyboard1.App_Start.MetroUICSSBundleConfig), "RegisterBundles")]
+[assembly: WebActivatorEx.PostApplicationStartMethod(typeof(RuOskWeb.App_Start.MetroUICSSBundleConfig), "RegisterBundles")]
 
-namespace Keyboard1.App_Start
+namespace RuOskWeb.App_Start
 {
+    [Obsolete]
 	public class MetroUICSSBundleConfig
 	{
 		public static void RegisterBundles()
