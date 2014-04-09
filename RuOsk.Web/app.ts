@@ -29,6 +29,7 @@ jQuery.fn.extend({
     }
 });
 
+// Keyboard button
 class Button {
 
     private element: JQuery;
@@ -45,6 +46,12 @@ class Button {
         if (cyrillic != undefined) {
             this.currentCharacter = cyrillic;
         }
+    }
+
+    setClass(cssClass: string)
+    {
+        this.element.removeClass("success warning danger info primary");
+        this.element.addClass(cssClass);
     }
 
     setStyle(style: string) {
@@ -92,14 +99,6 @@ class Output {
     append(char: string) {
         this.textbox.insertAtCursor(char);
     }
-
-    clear() {
-        this.textbox.val("");
-    }
-
-    isEmpty() {
-        this.textbox.val() == "";
-    }
 }
 
 class Character {
@@ -112,6 +111,7 @@ class Keyboard {
     private shiftPressed = false;
 
     private buttons: Button[] = [];
+    private shiftButtons: Button[] = [];
 
     constructor(public output: Output) {
     }
@@ -122,7 +122,11 @@ class Keyboard {
 
         if (this.shiftPressed) {
             this.shiftPressed = false;
+
             this.changeKeyboardCase();
+            $.each(this.shiftButtons, (index: number, button: Button) => {
+                button.setClass("info");
+            });
         }
     }
 
@@ -160,7 +164,7 @@ class Keyboard {
     }
 
     addLatinCyrillicButton() {
-        var button = new Button(0, undefined, undefined, "button success");
+        var button = new Button(0, undefined, undefined, "button primary");
         button.val("To latin");
         button.click(() => {
 
@@ -218,8 +222,10 @@ class Keyboard {
     addThirdRowButtons() {
         var button = new Button(2);
         button.val("Caps Lock");
-        button.click(() => { this.capsLockPressed = !this.capsLockPressed; this.changeKeyboardCase(); })
-        this.buttons.push(button);
+        button.click(() => {
+            this.capsLockPressed = !this.capsLockPressed; this.changeKeyboardCase();
+            button.setClass(this.capsLockPressed ? "primary" : "info");
+        })
 
         this.addKeyLetter(2, "ф", "a");
         this.addKeyLetter(2, "ы", "s");
@@ -248,19 +254,23 @@ class Keyboard {
     }
 
     addFifthRowButtons() {
+        this.addShiftButton();
+        this.addKeyLetter(4, " ", " ", "width: 220px;");
+        this.addShiftButton();
+    }
+
+    addShiftButton() {
         var button = new Button(4);
-        button.click(() => { this.shiftPressed = !this.shiftPressed; this.changeKeyboardCase(); })
+        button.click(() => {
+            this.shiftPressed = !this.shiftPressed;
+            this.changeKeyboardCase();
+            $.each(this.shiftButtons, (index, button: Button) => {
+                button.setClass(this.shiftPressed ? "primary" : "info")
+            });
+        });
         button.setStyle("width: 60px;");
         button.val("Shift");
-        this.buttons.push(button);
-
-        this.addKeyLetter(4, " ", " ", "width: 220px;");
-
-        button = new Button(4);
-        button.click(() => { this.shiftPressed = !this.shiftPressed; this.changeKeyboardCase(); })
-        button.setStyle("width:60px;");
-        button.val("Shift");
-        this.buttons.push(button);
+        this.shiftButtons.push(button);
     }
 
     isShiftOrCapsLockPressed() {
@@ -293,7 +303,7 @@ class Translit {
 
             var hint = encodeURI(this.translitArray[index]) + " &raquo; " + this.alphabetArray[index];
 
-            var labelStyle = index % 2 == 0 ? "default" : "success";
+            var labelStyle = index % 2 == 0 ? "default" : "info";
 
             $("#legend1").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "' data-hint-position='top'>" + this.translitArray[index] + "</span>")
             $("#legend2").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "'><strong>" + this.alphabetArray[index] + "</strong></span>");
@@ -322,6 +332,7 @@ class Translit {
 
             return true;
         }
+
         return false;
     }
 
@@ -340,8 +351,7 @@ class Translit {
 
         if (this.tryCode(letter, [this.prevPrevLetter, this.prevLetter]) ||
             this.tryCode(letter, [this.prevLetter]) ||
-            this.tryCode(letter) // Make use of short circut evaluation
-            ) {
+            this.tryCode(letter)) { // Make use of short circut evaluation
             event.preventDefault();
             this.prevPrevLetter = this.prevLetter;
             this.prevLetter = letter;
@@ -351,13 +361,8 @@ class Translit {
 
 $(() => {
     var textbox = $("#output");
-
-    var output = new Output(textbox);
-    var keyboard = new Keyboard(output);
-    keyboard.init();
-
-    var translit = new Translit(textbox);
-    translit.init();
+    new Keyboard(new Output(textbox)).init();
+    new Translit(textbox).init();
 });
 
 

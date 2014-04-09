@@ -26,6 +26,7 @@ jQuery.fn.extend({
     }
 });
 
+// Keyboard button
 var Button = (function () {
     function Button(rowIndex, cyrillic, latin, cssClass) {
         if (typeof cssClass === "undefined") { cssClass = "button info"; }
@@ -39,6 +40,11 @@ var Button = (function () {
             this.currentCharacter = cyrillic;
         }
     }
+    Button.prototype.setClass = function (cssClass) {
+        this.element.removeClass("success warning danger info primary");
+        this.element.addClass(cssClass);
+    };
+
     Button.prototype.setStyle = function (style) {
         this.element.attr("style", style);
     };
@@ -84,14 +90,6 @@ var Output = (function () {
     Output.prototype.append = function (char) {
         this.textbox.insertAtCursor(char);
     };
-
-    Output.prototype.clear = function () {
-        this.textbox.val("");
-    };
-
-    Output.prototype.isEmpty = function () {
-        this.textbox.val() == "";
-    };
     return Output;
 })();
 
@@ -109,13 +107,18 @@ var Keyboard = (function () {
         this.capsLockPressed = false;
         this.shiftPressed = false;
         this.buttons = [];
+        this.shiftButtons = [];
     }
     Keyboard.prototype.pressButton = function (button) {
         this.output.append(this.isShiftOrCapsLockPressed() ? button.currentCharacter.upper : button.currentCharacter.lower);
 
         if (this.shiftPressed) {
             this.shiftPressed = false;
+
             this.changeKeyboardCase();
+            $.each(this.shiftButtons, function (index, button) {
+                button.setClass("info");
+            });
         }
     };
 
@@ -156,7 +159,7 @@ var Keyboard = (function () {
 
     Keyboard.prototype.addLatinCyrillicButton = function () {
         var _this = this;
-        var button = new Button(0, undefined, undefined, "button success");
+        var button = new Button(0, undefined, undefined, "button primary");
         button.val("To latin");
         button.click(function () {
             button.val(button.getVal() === "To latin" ? "To cyrillic" : "To latin");
@@ -215,8 +218,8 @@ var Keyboard = (function () {
         button.click(function () {
             _this.capsLockPressed = !_this.capsLockPressed;
             _this.changeKeyboardCase();
+            button.setClass(_this.capsLockPressed ? "primary" : "info");
         });
-        this.buttons.push(button);
 
         this.addKeyLetter(2, "ф", "a");
         this.addKeyLetter(2, "ы", "s");
@@ -245,26 +248,24 @@ var Keyboard = (function () {
     };
 
     Keyboard.prototype.addFifthRowButtons = function () {
+        this.addShiftButton();
+        this.addKeyLetter(4, " ", " ", "width: 220px;");
+        this.addShiftButton();
+    };
+
+    Keyboard.prototype.addShiftButton = function () {
         var _this = this;
         var button = new Button(4);
         button.click(function () {
             _this.shiftPressed = !_this.shiftPressed;
             _this.changeKeyboardCase();
+            $.each(_this.shiftButtons, function (index, button) {
+                button.setClass(_this.shiftPressed ? "primary" : "info");
+            });
         });
         button.setStyle("width: 60px;");
         button.val("Shift");
-        this.buttons.push(button);
-
-        this.addKeyLetter(4, " ", " ", "width: 220px;");
-
-        button = new Button(4);
-        button.click(function () {
-            _this.shiftPressed = !_this.shiftPressed;
-            _this.changeKeyboardCase();
-        });
-        button.setStyle("width:60px;");
-        button.val("Shift");
-        this.buttons.push(button);
+        this.shiftButtons.push(button);
     };
 
     Keyboard.prototype.isShiftOrCapsLockPressed = function () {
@@ -294,7 +295,7 @@ var Translit = (function () {
         $.each(this.alphabet.split(""), function (index, value) {
             var hint = encodeURI(_this.translitArray[index]) + " &raquo; " + _this.alphabetArray[index];
 
-            var labelStyle = index % 2 == 0 ? "default" : "success";
+            var labelStyle = index % 2 == 0 ? "default" : "info";
 
             $("#legend1").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "' data-hint-position='top'>" + _this.translitArray[index] + "</span>");
             $("#legend2").append("<span class='label " + labelStyle + "' style='width: 28px;' data-hint='" + hint + "'><strong>" + _this.alphabetArray[index] + "</strong></span>");
@@ -324,6 +325,7 @@ var Translit = (function () {
 
             return true;
         }
+
         return false;
     };
 
@@ -353,12 +355,7 @@ var Translit = (function () {
 
 $(function () {
     var textbox = $("#output");
-
-    var output = new Output(textbox);
-    var keyboard = new Keyboard(output);
-    keyboard.init();
-
-    var translit = new Translit(textbox);
-    translit.init();
+    new Keyboard(new Output(textbox)).init();
+    new Translit(textbox).init();
 });
 //# sourceMappingURL=app.js.map
