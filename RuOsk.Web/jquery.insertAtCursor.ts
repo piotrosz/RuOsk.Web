@@ -1,6 +1,8 @@
-﻿jQuery.fn.extend({
+﻿/// <reference path="jquery.cursor.ts" />
+
+jQuery.fn.extend({
     insertAtCursor: function (value) {
-        return this.each(function (i) {
+        return this.each(function () {
             if (document.selection) {
                 this.focus();
                 var selection = document.selection.createRange();
@@ -12,9 +14,7 @@
                 var selectionEnd = this.selectionEnd;
                 var scrollTop = this.scrollTop;
                 this.value = this.value.substring(0, selectionStart) + value + this.value.substring(selectionEnd, this.value.length);
-                this.focus();
-                this.selectionStart = selectionStart + value.length;
-                this.selectionEnd = selectionStart + value.length;
+                $(this).setCursorPosition(selectionStart + value.length);
                 this.scrollTop = scrollTop;
             }
             else {
