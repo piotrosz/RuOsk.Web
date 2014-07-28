@@ -12,10 +12,11 @@
 
     private tryCode(letter: string, prev?: string[]) {
 
-        var translitIndex = (prev == undefined) ? this.translitArrays.translitArray.indexOf(letter) : this.translitArrays.translitArray.indexOf(prev.join("") + letter);
+        var searchCharacter = (prev == undefined) ? letter : prev.join("") + letter;
+        var translitIndex = this.translitArrays.translit.indexOf(searchCharacter);
 
         if (translitIndex != -1) {
-            var russian = this.translitArrays.alphabetArray[translitIndex];
+            var russian = this.translitArrays.alphabet[translitIndex];
 
             if (prev != undefined) {
                 this.deleteCharacterBeforeCursor();

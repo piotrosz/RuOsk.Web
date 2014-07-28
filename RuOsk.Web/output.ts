@@ -2,8 +2,8 @@
 
     constructor(public textbox: JQuery) { }
 
-    append(char: string) {
-        this.textbox.insertAtCursor(char);
+    append(value: string) {
+        this.textbox.insertAtCursor(value);
     }
 }
  

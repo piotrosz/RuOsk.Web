@@ -30,16 +30,16 @@
         if (this.lengh == 0) return -1;
         var input = this[0];
 
-        var pos = input.value.length;
+        var position = input.value.length;
 
         if (input.createTextRange) {
             var range = document.selection.createRange().duplicate();
             range.moveEnd('character', input.value.length);
-            pos = input.value.lastIndexOf(range.text);
+            position = input.value.lastIndexOf(range.text);
         } else if (typeof (input.selectionStart) != "undefined")
-            pos = input.selectionStart;
+            position = input.selectionStart;
 
-        return pos;
+        return position;
     }
 
     jQuery.fn.getSelectionEnd = function () {
