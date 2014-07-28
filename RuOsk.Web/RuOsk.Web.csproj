@@ -207,8 +207,8 @@
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="button.ts" />
     <TypeScriptCompile Include="character.ts" />
-    <TypeScriptCompile Include="jquery.insertAtCursor.ts" />
     <TypeScriptCompile Include="jquery.cursor.ts" />
+    <TypeScriptCompile Include="jquery.insertAtCursor.ts" />
     <TypeScriptCompile Include="keyboard.ts" />
     <TypeScriptCompile Include="output.ts" />
     <TypeScriptCompile Include="Scripts\typings\jqueryui\jqueryui.d.ts" />
