@@ -7,4 +7,6 @@ Visual Studio 2013 solution.
 * TypeScript 0.9.5: http://www.typescriptlang.org/, 
 * metroui CSS styles: http://metroui.org.ua/
 
+See it live here:
+(http://if.pw.edu.pl/~ludwik/ruosk/)
  
